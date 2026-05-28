@@ -16,9 +16,9 @@ for row in data:
     payload = {
         "station": row["station"],
         "discharge": row["discharge"],
-        "rainfall_mm": row.get("rainfall", 0),
-        "temperature_c": row.get("temperature", 25),
-        "soil_moisture_mm": row.get("soil_moisture", 25),
+        "rainfall_mm": row.get("rainfall_mm", 0),
+        "temperature_c": row.get("temperature_c", 25),
+        "soil_moisture_mm": row.get("soil_moisture_mm", 25),
         "source": "local_scheduled_scraper",
         "reading_time": None
     }
