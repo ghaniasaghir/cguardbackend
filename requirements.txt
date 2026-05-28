@@ -33,3 +33,7 @@ webdriver-manager
 opencv-python-headless
 pytesseract
 python-dotenv
+curl_cffi
+beautifulsoup4
+lxml
+requests
