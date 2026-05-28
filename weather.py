@@ -1,31 +1,4 @@
-'''
-import requests
 
-LAT = 32.2650
-LON = 72.8984
-
-def get_weather_data():
-
-    url = (
-        f"https://api.open-meteo.com/v1/forecast"
-        f"?latitude={LAT}"
-        f"&longitude={LON}"
-        f"&current=temperature_2m,rain"
-        f"&hourly=soil_moisture_0_to_1cm"
-    )
-
-    response = requests.get(url)
-
-    data = response.json()
-
-    result = {
-        "temperature": data["current"]["temperature_2m"],
-        "rainfall": data["current"]["rain"],
-        "soil_moisture": data["hourly"]["soil_moisture_0_to_1cm"][0]
-    }
-
-    return result
-'''
 import requests
 
 # Exact coordinates for each station
@@ -58,7 +31,7 @@ def get_weather_for_station(station_name):
     url = f"https://api.open-meteo.com/v1/forecast?latitude={coords['lat']}&longitude={coords['lon']}&current=temperature_2m,rain,soil_moisture_0_to_1cm"
     
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(url, timeout=5)
         data = response.json()
         
         current = data.get("current", {})
