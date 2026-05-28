@@ -1,7 +1,8 @@
+import os
 import requests
 from scraper import get_flood_data
 
-RAILWAY_BACKEND_URL = "https://cguardbackend-production.up.railway.app"
+RAILWAY_BACKEND_URL = os.getenv("RAILWAY_BACKEND_URL", "https://cguardbackend-production.up.railway.app")
 
 data = get_flood_data()
 
