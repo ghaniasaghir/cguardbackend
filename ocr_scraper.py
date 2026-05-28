@@ -20,18 +20,24 @@ def extract_date(text):
         r"\d{1,2}\s+[A-Za-z]{3,9}\s+\d{4}\s+\d{1,2}:\d{2}",
         r"\d{4}-\d{2}-\d{2}\s+\d{1,2}:\d{2}",
     ]
-
     for pattern in patterns:
         match = re.search(pattern, text)
         if match:
             return match.group(0)
-
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 def run_ocr_scraper():
-    print("🌐 Connecting to PMD FFD Dashboard via curl_cffi...")
+    print("🌐 Connecting to PMD FFD Dashboard via curl_cffi + Webshare Proxy...")
 
     url = "https://ffd.pmd.gov.pk/staff/discharge-report-carousel"
+
+    # 1. YOUR LIVE WEBSHARE PROXY DETAILS INTEGRATED HERE
+    my_proxy_string = "http://hnearlfg:wozfs4njseds@38.154.203.95:5863"
+    
+    proxies = {
+        "http": my_proxy_string,
+        "https": my_proxy_string
+    }
 
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -41,11 +47,13 @@ def run_ocr_scraper():
         "Referer": "https://ffd.pmd.gov.pk/",
     }
 
+    # 2. PASSING THE PROXIES BLOCK DIRECTLY INTO THE REQUEST
     response = requests.get(
         url,
         headers=headers,
+        proxies=proxies,          # <-- Added this line to route traffic through the proxy
         impersonate="chrome120",
-        timeout=20
+        timeout=25
     )
 
     if response.status_code != 200:
@@ -55,7 +63,7 @@ def run_ocr_scraper():
     soup = BeautifulSoup(html, "lxml")
     text = soup.get_text(" ", strip=True)
 
-    print("✅ Successfully bypassed Cloudflare/WAF layer!")
+    print("✅ Successfully bypassed Cloudflare/WAF layer using premium proxy wrapper!")
 
     report_date = extract_date(text)
     print(f"📅 Extracted Date: {report_date}")
@@ -67,7 +75,6 @@ def run_ocr_scraper():
 
     for row in rows:
         row_text = row.get_text(" ", strip=True)
-
         for station in TARGET_STATIONS:
             if station.lower() in row_text.lower():
                 numbers = re.findall(r"\d[\d,]*(?:\.\d+)?", row_text)
@@ -79,7 +86,6 @@ def run_ocr_scraper():
 
                 if discharge_candidates:
                     discharge = discharge_candidates[0]
-
                     results[station] = {
                         "date": report_date,
                         "station": station,
@@ -97,7 +103,6 @@ def run_ocr_scraper():
 
         if match:
             discharge = clean_number(match.group(1))
-
             if discharge and discharge >= 1000:
                 results[station] = {
                     "date": report_date,
